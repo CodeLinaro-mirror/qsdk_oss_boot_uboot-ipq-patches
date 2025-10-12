@@ -1,0 +1,78 @@
+From 4e1fc9c2f7c898495c8a2c325b93ead7959e167a Mon Sep 17 00:00:00 2001
+From: Saahil Tomar <saahtoma@qti.qualcomm.com>
+Date: Tue, 30 Sep 2025 15:10:20 +0530
+Subject: [PATCH] drivers: Remove support for IPQ5200
+
+Change-Id: I17308a934fd5c59524b43b76b29dd2a10f03b3c2
+Signed-off-by: Saahil Tomar <saahtoma@qti.qualcomm.com>
+---
+ drivers/clk/qcom/Kconfig      | 8 --------
+ drivers/clk/qcom/Makefile     | 1 -
+ drivers/pinctrl/qcom/Kconfig  | 7 -------
+ drivers/pinctrl/qcom/Makefile | 1 -
+ 4 files changed, 17 deletions(-)
+
+diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
+index 4c60cc40314..80c12287a04 100644
+--- a/drivers/clk/qcom/Kconfig
++++ b/drivers/clk/qcom/Kconfig
+@@ -47,14 +47,6 @@ config CLK_QCOM_IPQ5424
+ 	  on the Snapdragon IPQ5424 SoC. This driver supports the clocks
+ 	  and resets exposed by the GCC hardware block.
+ 
+-config CLK_QCOM_IPQ5200
+-	bool "Qualcomm IPQ5200 GCC"
+-	select CLK_QCOM
+-	help
+-	  Say Y here to enable support for the Global Clock Controller
+-	  on the Snapdragon IPQ5200 SoC. This driver supports the clocks
+-	  and resets exposed by the GCC hardware block.
+-
+ config CLK_QCOM_IPQ9574
+ 	bool "Qualcomm IPQ9574 GCC"
+ 	select CLK_QCOM
+diff --git a/drivers/clk/qcom/Makefile b/drivers/clk/qcom/Makefile
+index 3f72a63f2e1..3c0e7cdc0b2 100644
+--- a/drivers/clk/qcom/Makefile
++++ b/drivers/clk/qcom/Makefile
+@@ -9,7 +9,6 @@ obj-$(CONFIG_CLK_QCOM_APQ8096) += clock-apq8096.o
+ obj-$(CONFIG_CLK_QCOM_IPQ4019) += clock-ipq4019.o
+ obj-$(CONFIG_CLK_QCOM_IPQ5332) += clock-ipq5332.o
+ obj-$(CONFIG_CLK_QCOM_IPQ5424) += clock-ipq5424.o
+-obj-$(CONFIG_CLK_QCOM_IPQ5200) += clock-ipq5200.o
+ obj-$(CONFIG_CLK_QCOM_IPQ9574) += clock-ipq9574.o
+ obj-$(CONFIG_CLK_QCOM_QCM2290) += clock-qcm2290.o
+ obj-$(CONFIG_CLK_QCOM_QCS404) += clock-qcs404.o
+diff --git a/drivers/pinctrl/qcom/Kconfig b/drivers/pinctrl/qcom/Kconfig
+index b1a76e4ba59..e9e34a0614c 100644
+--- a/drivers/pinctrl/qcom/Kconfig
++++ b/drivers/pinctrl/qcom/Kconfig
+@@ -41,13 +41,6 @@ config PINCTRL_QCOM_IPQ5424
+ 	  Say Y here to enable support for pinctrl on the IPQ5424 SoC,
+ 	  as well as the associated GPIO driver.
+ 
+-config PINCTRL_QCOM_IPQ5200
+-	bool "Qualcomm IPQ5200 GCC"
+-	select PINCTRL_QCOM
+-	help
+-	  Say Y here to enable support for pinctrl on the IPQ5200 SoC,
+-	  as well as the associated GPIO driver.
+-
+ config PINCTRL_QCOM_IPQ9574
+ 	bool "Qualcomm IPQ9574 GCC"
+ 	select PINCTRL_QCOM
+diff --git a/drivers/pinctrl/qcom/Makefile b/drivers/pinctrl/qcom/Makefile
+index 760cdc77e2f..131f2a5ebea 100644
+--- a/drivers/pinctrl/qcom/Makefile
++++ b/drivers/pinctrl/qcom/Makefile
+@@ -5,7 +5,6 @@
+ obj-$(CONFIG_PINCTRL_QCOM) += pinctrl-qcom.o
+ obj-$(CONFIG_PINCTRL_QCOM_APQ8016) += pinctrl-apq8016.o
+ obj-$(CONFIG_PINCTRL_QCOM_IPQ4019) += pinctrl-ipq4019.o
+-obj-$(CONFIG_PINCTRL_QCOM_IPQ5200) += pinctrl-ipq5200.o
+ obj-$(CONFIG_PINCTRL_QCOM_IPQ5332) += pinctrl-ipq5332.o
+ obj-$(CONFIG_PINCTRL_QCOM_IPQ5424) += pinctrl-ipq5424.o
+ obj-$(CONFIG_PINCTRL_QCOM_IPQ9574) += pinctrl-ipq9574.o
+-- 
+2.34.1
+
