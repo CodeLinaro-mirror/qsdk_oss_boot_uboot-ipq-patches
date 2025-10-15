@@ -1,4 +1,4 @@
-From 289dc164602dc68dce2d60005d4554eecc640e5e Mon Sep 17 00:00:00 2001
+From 123474c699d63f094d0efaa2663d4ed2c06f4182 Mon Sep 17 00:00:00 2001
 From: Ram Kumar D <quic_ramd@quicinc.com>
 Date: Thu, 23 Jan 2025 16:02:38 +0530
 Subject: [PATCH] arch: arm: Add mach-ipq support
@@ -35,10 +35,10 @@ Signed-off-by: Vandhiadevan Karunamoorthy <quic_vkarunam@quicinc.com>
  13 files changed, 102 insertions(+), 9 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 7282c4123b0..3d18c2ec10a 100644
+index da6f1174934..581e2342eea 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -779,6 +779,22 @@ config ARCH_IPQ40XX
+@@ -789,6 +789,22 @@ config ARCH_IPQ40XX
  	imply CMD_DM
  	imply OF_UPSTREAM
  
@@ -61,7 +61,7 @@ index 7282c4123b0..3d18c2ec10a 100644
  config ARCH_KEYSTONE
  	bool "TI Keystone"
  	select CMD_DDR3
-@@ -2268,6 +2284,8 @@ source "arch/arm/mach-integrator/Kconfig"
+@@ -2277,6 +2293,8 @@ source "arch/arm/mach-integrator/Kconfig"
  
  source "arch/arm/mach-ipq40xx/Kconfig"
  
@@ -71,7 +71,7 @@ index 7282c4123b0..3d18c2ec10a 100644
  
  source "arch/arm/mach-keystone/Kconfig"
 diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index cb87a684754..442be85a2db 100644
+index 7334e79965f..befce234e65 100644
 --- a/arch/arm/Makefile
 +++ b/arch/arm/Makefile
 @@ -63,6 +63,7 @@ machine-$(CONFIG_ARCH_GXP)		+= hpe
@@ -83,7 +83,7 @@ index cb87a684754..442be85a2db 100644
  machine-$(CONFIG_ARCH_KEYSTONE)		+= keystone
  machine-$(CONFIG_ARCH_KIRKWOOD)		+= kirkwood
 diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
-index d76fca5dba4..f9d6f84ef77 100644
+index cb867acc48c..80c12287a04 100644
 --- a/drivers/clk/qcom/Kconfig
 +++ b/drivers/clk/qcom/Kconfig
 @@ -1,4 +1,4 @@
@@ -124,7 +124,7 @@ index d76fca5dba4..f9d6f84ef77 100644
  	bool "Qualcomm QCM2290 GCC"
  	select CLK_QCOM
 diff --git a/drivers/clk/qcom/Makefile b/drivers/clk/qcom/Makefile
-index ab33f1c5faf..91d42772cbc 100644
+index 1bc0f15005b..3c0e7cdc0b2 100644
 --- a/drivers/clk/qcom/Makefile
 +++ b/drivers/clk/qcom/Makefile
 @@ -7,6 +7,9 @@ obj-$(CONFIG_CLK_QCOM_SDM845) += clock-sdm845.o
@@ -136,9 +136,9 @@ index ab33f1c5faf..91d42772cbc 100644
 +obj-$(CONFIG_CLK_QCOM_IPQ9574) += clock-ipq9574.o
  obj-$(CONFIG_CLK_QCOM_QCM2290) += clock-qcm2290.o
  obj-$(CONFIG_CLK_QCOM_QCS404) += clock-qcs404.o
- obj-$(CONFIG_CLK_QCOM_SC7280) += clock-sc7280.o
+ obj-$(CONFIG_CLK_QCOM_SA8775P) += clock-sa8775p.o
 diff --git a/drivers/clk/qcom/clock-qcom.c b/drivers/clk/qcom/clock-qcom.c
-index 25ca67e537d..d1e2ef849cd 100644
+index 7687bbe6a23..4c70c71cb35 100644
 --- a/drivers/clk/qcom/clock-qcom.c
 +++ b/drivers/clk/qcom/clock-qcom.c
 @@ -8,6 +8,7 @@
@@ -161,7 +161,7 @@ index 25ca67e537d..d1e2ef849cd 100644
  
  #define CFG_SRC_DIV_MASK	0b11111
 diff --git a/drivers/clk/qcom/clock-qcom.h b/drivers/clk/qcom/clock-qcom.h
-index 78d9b1d81ec..7cd07512957 100644
+index ff336dea39c..74dd5435ef4 100644
 --- a/drivers/clk/qcom/clock-qcom.h
 +++ b/drivers/clk/qcom/clock-qcom.h
 @@ -1,6 +1,7 @@
@@ -172,7 +172,7 @@ index 78d9b1d81ec..7cd07512957 100644
   */
  #ifndef _CLOCK_QCOM_H
  #define _CLOCK_QCOM_H
-@@ -9,6 +10,7 @@
+@@ -10,6 +11,7 @@
  
  #define CFG_CLK_SRC_CXO   (0 << 8)
  #define CFG_CLK_SRC_GPLL0 (1 << 8)
@@ -226,7 +226,7 @@ index 27bb7052fca..c04081e5368 100644
  	if (ret)
  		clk_rate = 201500000;
 diff --git a/drivers/pinctrl/qcom/Kconfig b/drivers/pinctrl/qcom/Kconfig
-index 4f93a34281d..92cc63422dc 100644
+index d3eb6998551..e9e34a0614c 100644
 --- a/drivers/pinctrl/qcom/Kconfig
 +++ b/drivers/pinctrl/qcom/Kconfig
 @@ -1,4 +1,4 @@
@@ -264,7 +264,7 @@ index 4f93a34281d..92cc63422dc 100644
  	bool "Qualcomm QCM2290 GCC"
  	select PINCTRL_QCOM
 diff --git a/drivers/pinctrl/qcom/Makefile b/drivers/pinctrl/qcom/Makefile
-index 43d0dd29222..ea51f3097cf 100644
+index 06d3c95f93a..131f2a5ebea 100644
 --- a/drivers/pinctrl/qcom/Makefile
 +++ b/drivers/pinctrl/qcom/Makefile
 @@ -5,6 +5,9 @@
