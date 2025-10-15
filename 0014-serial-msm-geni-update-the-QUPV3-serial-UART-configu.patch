@@ -1,4 +1,4 @@
-From 4b5527c85bb0bd003b197445e31d5441e65ecb2f Mon Sep 17 00:00:00 2001
+From dccba734e78466525adbbd8c219d679617bd22d1 Mon Sep 17 00:00:00 2001
 From: Timple Raj M <timple@qti.qualcomm.com>
 Date: Mon, 19 May 2025 12:52:49 +0530
 Subject: [PATCH] serial: msm-geni: update the QUPV3 serial UART configuration
@@ -17,10 +17,10 @@ Signed-off-by: Timple Raj M <timple@qti.qualcomm.com>
  1 file changed, 26 insertions(+), 52 deletions(-)
 
 diff --git a/drivers/serial/serial_msm_geni.c b/drivers/serial/serial_msm_geni.c
-index c940adac006..814073710b8 100644
+index bbc38cb38d4..b49e953dc7e 100644
 --- a/drivers/serial/serial_msm_geni.c
 +++ b/drivers/serial/serial_msm_geni.c
-@@ -16,6 +16,7 @@
+@@ -17,6 +17,7 @@
  #include <linux/time.h>
  #include <misc.h>
  #include <serial.h>
@@ -28,7 +28,7 @@ index c940adac006..814073710b8 100644
  
  #define UART_OVERSAMPLING	32
  #define STALE_TIMEOUT	160
-@@ -23,8 +24,6 @@
+@@ -24,8 +25,6 @@
  /* Registers*/
  #define GENI_FORCE_DEFAULT_REG	0x20
  #define GENI_SER_M_CLK_CFG	0x48
@@ -37,7 +37,7 @@ index c940adac006..814073710b8 100644
  #define SE_GENI_STATUS	0x40
  #define SE_GENI_S_CMD0	0x630
  #define SE_GENI_S_CMD_CTRL_REG	0x634
-@@ -40,7 +39,6 @@
+@@ -41,7 +40,6 @@
  #define SE_GENI_RX_FIFOn	0x780
  #define SE_GENI_TX_FIFO_STATUS	0x800
  #define SE_GENI_RX_FIFO_STATUS	0x804
@@ -45,7 +45,7 @@ index c940adac006..814073710b8 100644
  #define SE_GENI_TX_PACKING_CFG0	0x260
  #define SE_GENI_TX_PACKING_CFG1	0x264
  #define SE_GENI_RX_PACKING_CFG0	0x284
-@@ -55,64 +53,27 @@
+@@ -56,64 +54,27 @@
  #define SE_UART_RX_TRANS_CFG	0x280
  #define SE_UART_RX_PARITY_CFG	0x2a8
  
@@ -111,7 +111,7 @@ index c940adac006..814073710b8 100644
  
  /*
   * Predefined packing configuration of the serial engine (CFG0, CFG1 regs)
-@@ -132,9 +93,11 @@ struct msm_serial_data {
+@@ -133,9 +94,11 @@ struct msm_serial_data {
  	phys_addr_t base;
  	u32 baud;
  	u32 oversampling;
@@ -124,7 +124,7 @@ index c940adac006..814073710b8 100644
  			     32000000, 48000000, 64000000, 80000000,
  			     96000000, 100000000};
  
-@@ -184,14 +147,10 @@ static int get_clk_div_rate(u32 baud, u64 sampling_rate, u32 *clk_div)
+@@ -185,14 +148,10 @@ static int get_clk_div_rate(u32 baud, u64 sampling_rate, u32 *clk_div)
  
  static int geni_serial_set_clock_rate(struct udevice *dev, u64 rate)
  {
@@ -141,7 +141,7 @@ index c940adac006..814073710b8 100644
  	return ret;
  }
  
-@@ -204,12 +163,18 @@ static int geni_serial_set_clock_rate(struct udevice *dev, u64 rate)
+@@ -205,12 +164,18 @@ static int geni_serial_set_clock_rate(struct udevice *dev, u64 rate)
   *
   * Return: TX fifo depth in units of FIFO words.
   */
@@ -163,7 +163,7 @@ index c940adac006..814073710b8 100644
  	return tx_fifo_depth;
  }
  
-@@ -293,7 +258,7 @@ static bool qcom_geni_serial_poll_bit(const struct udevice *dev, int offset,
+@@ -294,7 +259,7 @@ static bool qcom_geni_serial_poll_bit(const struct udevice *dev, int offset,
  		baud = priv->baud;
  		if (!baud)
  			baud = 115200;
@@ -172,7 +172,7 @@ index c940adac006..814073710b8 100644
  		tx_fifo_width = geni_se_get_tx_fifo_width(priv->base);
  		fifo_bits = tx_fifo_depth * tx_fifo_width;
  		/*
-@@ -512,6 +477,7 @@ static int geni_set_oversampling(struct udevice *dev)
+@@ -513,6 +478,7 @@ static int geni_set_oversampling(struct udevice *dev)
  	/* Read the HW_VER register relative to the parents address space */
  	addr = ofnode_get_addr(parent_node);
  	geni_se_version = readl(addr + QUP_HW_VER_REG);
@@ -180,8 +180,8 @@ index c940adac006..814073710b8 100644
  
  	if (geni_se_version >= QUP_SE_VERSION_2_5)
  		priv->oversampling /= 2;
-@@ -563,6 +529,14 @@ static int msm_serial_probe(struct udevice *dev)
- 	struct msm_serial_data *priv = dev_get_priv(dev);
+@@ -566,6 +532,14 @@ static int msm_serial_probe(struct udevice *dev)
+ 	struct udevice *config = NULL;
  	int ret;
  
 +	priv->clk = devm_clk_get(dev, "se");
