@@ -1,0 +1,74 @@
+From 6d5cd1312687398badcb6befd1df9a9a8ca2df39 Mon Sep 17 00:00:00 2001
+From: Vignesh Viswanathan <viswanat@qti.qualcomm.com>
+Date: Fri, 7 Aug 2026 12:24:53 +0530
+Subject: [PATCH] pci: pcie_dw_qcom: Set PARF_SLV_ADDR_SPACE_SIZE
+
+The reset value of PARF_SLV_ADDR_SPACE_SIZE (PARF offset 0x358) may be
+smaller than the address window decoded by the root complex. When it
+is undersized, the RC's own config space aliases at a stride equal to
+that size, so BAR sizing and placement probes for downstream endpoints
+can hit the RC's aliased config header instead of the endpoint
+register and return bogus BAR values.
+
+Add an optional slv_addr_space_size field to struct qcom_pcie_ops and,
+when set, program it into PARF_SLV_ADDR_SPACE_SIZE during port init
+after the PHY is powered on. SoCs that leave the field unset keep the
+existing behaviour.
+
+Set it to 128 MB for IPQ5210, matching the value the Linux driver
+programs for the related IPQ SoCs in qcom_pcie_post_init_1_27_0().
+
+Change-Id: Iea1a02926390992fd9dea7fe709737f0194aaaed
+Signed-off-by: Vignesh Viswanathan <viswanat@qti.qualcomm.com>
+---
+ drivers/pci/pcie_dw_qcom.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/drivers/pci/pcie_dw_qcom.c b/drivers/pci/pcie_dw_qcom.c
+index 6f707778ca5..3243730642c 100644
+--- a/drivers/pci/pcie_dw_qcom.c
++++ b/drivers/pci/pcie_dw_qcom.c
+@@ -41,6 +41,7 @@ struct qcom_pcie_ops {
+ 	int (*config_sid)(struct qcom_pcie *priv);
+ 	int (*clear_sid)(struct qcom_pcie *priv);
+ 	const struct pcie_sku *sku;
++	u32 slv_addr_space_size;
+ };
+ 
+ #define NUM_SUPPLIES	2
+@@ -132,6 +133,7 @@ struct qcom_pcie {
+ 
+ /* PARF_SLV_ADDR_SPACE_SIZE register value */
+ #define SLV_ADDR_SPACE_SZ			0x10000000
++#define SLV_ADDR_SPACE_SZ_1_27_0		0x08000000
+ 
+ /* PARF_MHI_CLOCK_RESET_CTRL register fields */
+ #define AHB_CLK_EN				BIT(0)
+@@ -465,6 +467,16 @@ static int qcom_pcie_init_port(struct udevice *dev)
+ 	val |= EN;
+ 	writel(val, priv->parf + PARF_AXI_MSTR_WR_ADDR_HALT_V2);
+ 
++	/*
++	 * The reset value of PARF_SLV_ADDR_SPACE_SIZE can be smaller than
++	 * the address window decoded by the RC, which makes the RC config
++	 * space alias within that window. Program it explicitly when the
++	 * SoC provides a size.
++	 */
++	if (priv->ops && priv->ops->slv_addr_space_size)
++		writel(priv->ops->slv_addr_space_size,
++		       priv->parf + PARF_SLV_ADDR_SPACE_SIZE);
++
+ 	ret = generic_phy_power_on(&priv->phy);
+ 	if (ret) {
+ 		dev_err(dev, "failed to power on phy (%d)\n", ret);
+@@ -732,6 +744,7 @@ static const struct qcom_pcie_ops ops_ipq5210 = {
+ 	.config_sid = NULL,
+ 	.sku = NULL,
+ 	.clear_sid = qcom_pcie_clear_sidtable,
++	.slv_addr_space_size = SLV_ADDR_SPACE_SZ_1_27_0,
+ };
+ 
+ static const struct qcom_pcie_ops ops_ipq9650 = {
+-- 
+2.34.1
+
